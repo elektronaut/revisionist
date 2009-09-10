@@ -1,0 +1,40 @@
+= Revisionist
+
+Simple Rails plugin for handling revisioning of attributes.
+
+Work in progress.
+
+
+== Installation:
+
+You can install the plugin from github:
+
+ script/plugin install git://github.com/elektronaut/revisionist.git
+
+Once the plugin is installed, you need to run the generator to create
+the Revision model:
+
+ script/generate revisionist model
+ rake db:migrate
+
+
+== Usage:
+
+First, you'll need to declare the revisionable attributes:
+
+ class Company < ActiveRecord::Base
+   revisionable :name, :phone
+ end
+
+Everything else should be automatic:
+
+ @company = Company.create(:name => 'My company', :phone => '12345678')
+ @company.update_attributes(:name => 'New name')
+ @company.revisions_on?(:name) # => true
+ @company.revisions_on?(:phone) # => false
+ @company.revisions_on(:name).first.old_value # => 'My company'
+
+:revisionist and/or :revision_info allows you to maintain some sort of paper trail:
+
+ @company.update_attributes(:name => 'My new name', :revisionist => @user)
+ @company.update_attributes(:name => 'My company', :revision_info => 'Synced against the original source')
